@@ -10,7 +10,7 @@ interface ProjectsProps {
 export default function Projects({ data }: ProjectsProps) {
   return (
     <section id="projects" className="py-32 px-6 max-w-7xl mx-auto">
-      <div className="section-label">// 03 &nbsp;&nbsp; Cursed Techniques Applied</div>
+      <div className="section-label">// 04 &nbsp;&nbsp; Cursed Techniques Applied</div>
       <h2 className="text-6xl mb-16">Featured <br/>Missions</h2>
       
       <div className="grid gap-32">
@@ -27,10 +27,9 @@ export default function Projects({ data }: ProjectsProps) {
           >
             <div className="flex-1 w-full aspect-video overflow-hidden glass-panel jjk-button group">
               <img 
-                src={`https://picsum.photos/seed/jjk-proj-${project.id}/1200/800`} 
+                src={`/images/project-${project.id}.png`} 
                 alt={project.title}
                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                referrerPolicy="no-referrer"
               />
             </div>
             <div className="flex-1">
@@ -45,12 +44,16 @@ export default function Projects({ data }: ProjectsProps) {
                 ))}
               </div>
               <div className="flex gap-8">
-                <a href="#" className="flex items-center gap-2 text-xs tracking-widest uppercase hover:text-accent transition-colors">
-                  <ExternalLink size={14} /> Live Demo
-                </a>
-                <a href="#" className="flex items-center gap-2 text-xs tracking-widest uppercase hover:text-accent transition-colors">
-                  <Github size={14} /> Source
-                </a>
+                {project.demoUrl && (
+                  <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs tracking-widest uppercase hover:text-accent transition-colors">
+                    <ExternalLink size={14} /> Live Demo
+                  </a>
+                )}
+                {project.repoUrl && (
+                  <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs tracking-widest uppercase hover:text-accent transition-colors">
+                    <Github size={14} /> Source
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>

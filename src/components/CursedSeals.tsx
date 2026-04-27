@@ -1,13 +1,11 @@
-import { motion } from 'motion/react';
+
 
 export default function CursedSeals({ theme }: { theme: 'gojo' | 'sukuna' }) {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-20">
       {/* Top Left Seal */}
-      <motion.svg
-        animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute -top-20 -left-20 w-80 h-80 text-accent"
+      <svg
+        className="absolute -top-20 -left-20 w-80 h-80 text-accent animate-[spin_20s_linear_infinite]"
         viewBox="0 0 200 200"
       >
         <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="5 5" />
@@ -16,13 +14,11 @@ export default function CursedSeals({ theme }: { theme: 'gojo' | 'sukuna' }) {
         <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="currentColor" fontSize="10" className="font-display">
           {theme === 'sukuna' ? 'MALEVOLENT' : 'INFINITE'}
         </text>
-      </motion.svg>
+      </svg>
 
       {/* Bottom Right Seal */}
-      <motion.svg
-        animate={{ rotate: -360 }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="absolute -bottom-20 -right-20 w-96 h-96 text-secondary"
+      <svg
+        className="absolute -bottom-20 -right-20 w-96 h-96 text-secondary animate-[spin_25s_linear_infinite_reverse]"
         viewBox="0 0 200 200"
       >
         <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" strokeWidth="1" />
@@ -31,7 +27,7 @@ export default function CursedSeals({ theme }: { theme: 'gojo' | 'sukuna' }) {
         <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="currentColor" fontSize="8" className="font-heading uppercase tracking-widest">
           {theme === 'sukuna' ? 'SHRINE' : 'VOID'}
         </text>
-      </motion.svg>
+      </svg>
     </div>
   );
 }

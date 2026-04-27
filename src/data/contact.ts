@@ -1,7 +1,9 @@
 import { ContactData } from '../types/portfolio';
 
 export const contactData: ContactData = {
-  email: 'russell@example.com',
-  github: 'russellmutamba',
-  linkedin: 'russellmutamba'
+  email: 'russellmutamba@gmail.com',
+  github: 'russzw',
+  linkedin: 'russellzw',
+  twitter: 'russ_zw',
+  instagram: 'russzw'
 };

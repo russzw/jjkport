@@ -1,7 +1,8 @@
 import { Project } from '../types/portfolio';
 
 export const projectsData: Project[] = [
-  { id: '01', title: 'Void Infrastructure Platform', type: 'Cloud Infrastructure', desc: 'A multi-region cloud orchestration platform built on AWS. Handles auto-scaling, cost optimisation, and zero-downtime deployments.', stack: ['AWS', 'Terraform', 'Kubernetes', 'Go'] },
-  { id: '02', title: 'Cursed Commerce Engine', type: 'Full Stack Web', desc: 'E-commerce platform with real-time inventory, AI recommendations, and sub-100ms response times. 50k+ daily active users.', stack: ['Next.js', 'Node.js', 'Redis', 'PostgreSQL'] },
-  { id: '03', title: 'Six Eyes Finance', type: 'Mobile App', desc: 'Personal finance tracker with AI-driven insights, budget seals, and real-time currency conversion across African markets.', stack: ['React Native', 'Expo', 'FastAPI'] },
+  { id: '01', title: 'Funded Futures Africa', type: 'Full Stack Platform', desc: 'A full-stack app built to empower the next generation of African leaders through accessible education and opportunities.', stack: ['Next.js', 'TypeScript', 'Firebase', 'Tailwind'] },
+  { id: '02', title: 'Romeo Gasa Website', type: 'Artist Portfolio', desc: 'A fully functional CRUD app built with PHP and CSS. Robust authentication and dynamic content creation for an artist portfolio.', stack: ['PHP', 'CSS', 'MySQL', 'JavaScript'] },
+  { id: '03', title: 'Bridal Economics Explorer', type: 'Web Application', desc: 'Bridal Economics Explorer is an app that showcases the different bride prices across the globe with interactive data visualisation.', stack: ['React', 'Python', 'D3.js', 'API'] },
+  { id: '04', title: 'Smart Waste Management System', type: 'IoT / Full Stack', desc: 'A web application for managing waste collection and disposal with real-time IoT monitoring and route optimisation.', stack: ['Next.js', 'Python', 'AWS', 'IoT'] },
 ];

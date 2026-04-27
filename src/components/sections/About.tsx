@@ -19,9 +19,21 @@ export default function About({ data, theme }: AboutProps) {
           <h2 className="text-6xl mb-8 leading-none">
             Architect of the <em className="text-accent not-italic">Impossible</em>
           </h2>
-          <p className="text-lg leading-relaxed opacity-80 mb-8">
+          <p className="text-lg leading-relaxed opacity-80 mb-6">
             {data.bio}
           </p>
+          {/* Real bio from extracted data */}
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            whileInView={{ opacity: 1, height: 'auto' }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="relative pl-4 border-l-2 border-accent/30 mb-8"
+          >
+            <p className="text-sm leading-relaxed opacity-60 italic">
+              {data.realBio}
+            </p>
+          </motion.div>
           <div className="grid grid-cols-2 gap-4 mb-8">
             {data.stats.map(stat => (
               <div key={stat.label} className="glass-panel p-6 jjk-button">
@@ -37,13 +49,9 @@ export default function About({ data, theme }: AboutProps) {
           <div className="absolute inset-0 border border-secondary/20 -translate-x-4 -translate-y-4 jjk-button" />
           <div className="absolute inset-4 glass-panel overflow-hidden jjk-button">
             <img 
-              src={theme === 'sukuna' 
-                ? "https://picsum.photos/seed/sukuna/800/1000" 
-                : "https://picsum.photos/seed/gojo/800/1000"
-              } 
-              alt="Profile"
+              src="/images/profile.png"
+              alt="Russell Mutamba"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-              referrerPolicy="no-referrer"
             />
           </div>
         </div>

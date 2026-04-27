@@ -1,220 +1,95 @@
-import { useRef, useMemo } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
+import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 
-function InnerBackground({ theme }: { theme: 'gojo' | 'sukuna' }) {
-  const pointsRef1 = useRef<THREE.Points>(null!);
-  const pointsRef2 = useRef<THREE.Points>(null!);
-  const pointsRef3 = useRef<THREE.Points>(null!);
-  const ringsRef = useRef<THREE.Group>(null!);
-  const sphereRef = useRef<THREE.Mesh>(null!);
-  const cubesRef = useRef<THREE.Group>(null!);
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(true);
   
-  const colors = {
-    sukuna: { primary: '#ff2d2d', secondary: '#c41e3a', accent: '#d4a017' },
-    gojo: { primary: '#00d2ff', secondary: '#005bbb', accent: '#00b4d8' }
-  };
-  const activeColors = theme === 'sukuna' ? colors.sukuna : colors.gojo;
-
-  const particles1 = useMemo(() => {
-    const count = 2500; // Increased count
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 20;
-    return pos;
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth > 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
-
-  const particles2 = useMemo(() => {
-    const count = theme === 'sukuna' ? 600 : 300; // Increased count
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 15;
-    return pos;
-  }, [theme]);
-
-  const particles3 = useMemo(() => {
-    const count = 800; // Increased count
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 25;
-    return pos;
-  }, []);
-
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    
-    // Mouse movement
-    const mouseX = state.mouse.x * 0.5;
-    const mouseY = state.mouse.y * 0.5;
-
-    if (pointsRef1.current) {
-      pointsRef1.current.rotation.y = t * 0.05;
-      pointsRef1.current.rotation.x = t * 0.02;
-    }
-    
-    if (pointsRef2.current) {
-      pointsRef2.current.rotation.y = theme === 'sukuna' ? t * 0.1 : -t * 0.05;
-    }
-
-    if (pointsRef3.current) {
-      pointsRef3.current.rotation.x = t * 0.01;
-      if (theme === 'sukuna') {
-        const mat = pointsRef3.current.material as THREE.PointsMaterial;
-        mat.opacity = 0.2 + Math.sin(t * 2) * 0.1;
-      }
-    }
-
-    if (ringsRef.current) {
-      ringsRef.current.rotation.z = t * 0.1;
-      ringsRef.current.rotation.x = Math.sin(t * 0.5) * 0.2;
-    }
-
-    if (sphereRef.current && theme === 'gojo') {
-      sphereRef.current.rotation.y = t * 0.2;
-      sphereRef.current.rotation.z = t * 0.1;
-    }
-
-    if (cubesRef.current) {
-      cubesRef.current.rotation.y = t * 0.1;
-      cubesRef.current.children.forEach((child, i) => {
-        child.rotation.x = t * (0.2 + i * 0.1);
-        child.rotation.y = t * (0.3 + i * 0.05);
-        child.position.y += Math.sin(t + i) * 0.002;
-      });
-    }
-  });
-
-  return (
-    <>
-      <ambientLight intensity={theme === 'sukuna' ? 0.3 : 0.8} />
-      <pointLight position={[10, 10, 10]} intensity={theme === 'sukuna' ? 50 : 20} color={activeColors.primary} />
-      <spotLight 
-        position={[-10, 10, 10]} 
-        angle={0.15} 
-        penumbra={1} 
-        intensity={theme === 'sukuna' ? 100 : 40} 
-        color={activeColors.secondary} 
-      />
-      
-      {/* Cursed "Cubes" to fill the space */}
-      <group ref={cubesRef}>
-        {[...Array(6)].map((_, i) => (
-          <mesh 
-            key={i} 
-            position={[
-              (Math.random() - 0.5) * 10,
-              (Math.random() - 0.5) * 10,
-              (Math.random() - 1) * 5
-            ]}
-          >
-            <boxGeometry args={[0.2, 0.2, 0.2]} />
-            <meshStandardMaterial 
-              color={activeColors.primary} 
-              transparent 
-              opacity={0.3} 
-              wireframe={i % 2 === 0}
-            />
-          </mesh>
-        ))}
-      </group>
-
-      {/* Base Particles */}
-      <points ref={pointsRef1}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={particles1.length / 3}
-            array={particles1}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial
-          size={0.02}
-          color={activeColors.primary}
-          transparent
-          opacity={0.4}
-          sizeAttenuation
-          blending={theme === 'sukuna' ? THREE.AdditiveBlending : THREE.NormalBlending}
-          depthWrite={false}
-        />
-      </points>
-
-      {/* Secondary Fragments / Sukuna Slashes */}
-      <points ref={pointsRef2}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={particles2.length / 3}
-            array={particles2}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial
-          size={theme === 'sukuna' ? 0.1 : 0.06}
-          color={activeColors.secondary}
-          transparent
-          opacity={0.3}
-          sizeAttenuation
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </points>
-
-      {/* Spatial Dust */}
-      <points ref={pointsRef3}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={particles3.length / 3}
-            array={particles3}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial
-          size={0.04}
-          color={theme === 'sukuna' ? activeColors.accent : activeColors.primary}
-          transparent
-          opacity={0.2}
-          sizeAttenuation
-          depthWrite={false}
-        />
-      </points>
-
-      {/* Spatial Rings */}
-      <group ref={ringsRef}>
-        {[0.5, 1, 1.5, 2, 2.5].map((scale, i) => (
-          <mesh key={i} rotation={[Math.PI / 2 + (theme === 'sukuna' ? i : 0), 0, i]}>
-            <ringGeometry args={[2 + scale, 2.02 + (theme === 'sukuna' ? scale + 0.1 : scale), 64]} />
-            <meshBasicMaterial 
-              color={theme === 'sukuna' ? activeColors.secondary : activeColors.primary} 
-              transparent 
-              opacity={theme === 'sukuna' ? 0.1 - i * 0.02 : 0.05 - i * 0.01} 
-              side={THREE.DoubleSide} 
-            />
-          </mesh>
-        ))}
-      </group>
-
-      {/* Infinite Void Sphere */}
-      {theme === 'gojo' && (
-        <mesh ref={sphereRef}>
-          <sphereGeometry args={[12, 64, 64]} />
-          <meshBasicMaterial color={activeColors.secondary} wireframe opacity={0.01} transparent />
-        </mesh>
-      )}
-
-      {/* Malevolent Shrine Ambience */}
-      {theme === 'sukuna' && (
-        <fog attach="fog" args={['#080608', 2, 10]} />
-      )}
-    </>
-  );
+  
+  return isDesktop;
 }
 
 export default function CursedBackground({ theme }: { theme: 'gojo' | 'sukuna' }) {
+  const isDesktop = useIsDesktop();
+  const { scrollY } = useScroll();
+  
+  // Smooth out the scroll values so the parallax doesn't feel jumpy
+  const smoothY = useSpring(scrollY, { damping: 20, stiffness: 100 });
+  
+  // Create different parallax depths
+  const yDeep = useTransform(smoothY, [0, 5000], [0, -300]);
+  const yMid = useTransform(smoothY, [0, 5000], [0, -800]);
+  const yFore = useTransform(smoothY, [0, 5000], [0, -1500]);
+  
+  // Rotations tied to scroll
+  const rotateClockwise = useTransform(smoothY, [0, 5000], [0, 180]);
+  const rotateCounter = useTransform(smoothY, [0, 5000], [0, -180]);
+
+  const activeColor = theme === 'sukuna' ? '#ff2d2d' : '#00d2ff';
+  const secondaryColor = theme === 'sukuna' ? '#c41e3a' : '#005bbb';
+
   return (
-    <div className="cursed-canvas">
-      <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-        <color attach="background" args={[theme === 'sukuna' ? '#080608' : '#f8faff']} />
-        <InnerBackground theme={theme} />
-      </Canvas>
+    <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden bg-bg">
+      {/* Base gradient ambiance */}
+      <div 
+        className="absolute inset-0 opacity-10 transition-colors duration-1000"
+        style={{
+          background: `radial-gradient(circle at 50% 30%, ${activeColor} 0%, transparent 60%)`
+        }}
+      />
+      
+      {/* Sub-gradient */}
+      <div 
+        className="absolute inset-0 opacity-5 transition-colors duration-1000"
+        style={{
+          background: `radial-gradient(circle at 20% 80%, ${secondaryColor} 0%, transparent 50%)`
+        }}
+      />
+
+      {isDesktop && (
+        <div className="absolute inset-0 opacity-40">
+          {/* LAYER 1: Deep (Slowest) */}
+          <motion.div style={{ y: yDeep }} className="absolute inset-0">
+            <svg className="absolute top-[10%] left-[10%] w-64 h-64 opacity-50" viewBox="0 0 100 100" fill="none" stroke={activeColor} strokeWidth="1">
+              <circle cx="50" cy="50" r="40" strokeDasharray="4 4" />
+              <circle cx="50" cy="50" r="30" />
+            </svg>
+            <svg className="absolute top-[60%] right-[15%] w-96 h-96 opacity-40" viewBox="0 0 100 100" fill="none" stroke={secondaryColor} strokeWidth="1">
+              <path d="M 10 50 L 90 50 M 50 10 L 50 90 M 20 20 L 80 80 M 20 80 L 80 20" />
+              <circle cx="50" cy="50" r="45" />
+            </svg>
+          </motion.div>
+
+          {/* LAYER 2: Mid (Medium Speed) */}
+          <motion.div style={{ y: yMid, rotate: rotateCounter }} className="absolute inset-0 origin-center">
+            <svg className="absolute top-[30%] right-[20%] w-48 h-48 opacity-60" viewBox="0 0 100 100" fill="none" stroke={activeColor} strokeWidth="1.5">
+              <rect x="25" y="25" width="50" height="50" transform="rotate(45 50 50)" />
+              <rect x="25" y="25" width="50" height="50" />
+            </svg>
+            <svg className="absolute bottom-[10%] left-[25%] w-32 h-32 opacity-70" viewBox="0 0 100 100" fill="none" stroke={secondaryColor} strokeWidth="1.5">
+              <polygon points="50,10 90,90 10,90" />
+              <circle cx="50" cy="65" r="15" />
+            </svg>
+          </motion.div>
+
+          {/* LAYER 3: Foreground (Fastest) */}
+          <motion.div style={{ y: yFore, rotate: rotateClockwise }} className="absolute inset-0 origin-center">
+            <svg className="absolute top-[80%] right-[40%] w-24 h-24 opacity-80" viewBox="0 0 100 100" fill="none" stroke={activeColor} strokeWidth="2">
+              <path d="M 0 50 Q 50 0 100 50 T 0 50" />
+              <path d="M 50 0 Q 100 50 50 100 T 50 0" />
+            </svg>
+            <svg className="absolute top-[20%] left-[40%] w-16 h-16 opacity-100" viewBox="0 0 100 100" fill="none" stroke={secondaryColor} strokeWidth="3">
+              <line x1="0" y1="0" x2="100" y2="100" />
+              <line x1="100" y1="0" x2="0" y2="100" />
+            </svg>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

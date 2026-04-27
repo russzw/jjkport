@@ -48,7 +48,7 @@ export default function Hero({ data, theme }: HeroProps) {
           <span className="w-12 h-[1px] bg-accent/30" />
         </p>
         
-        <div className="relative mb-12">
+        <div className="relative mb-8">
           <h1 className="domain-expansion-text relative">
             <span className="block drop-shadow-2xl">{data.name}</span>
             <span className="block text-transparent" style={{ WebkitTextStroke: '1px var(--text)', opacity: 0.3 }}>
@@ -63,6 +63,16 @@ export default function Hero({ data, theme }: HeroProps) {
             transition={{ delay: 1, duration: 1.5, ease: "circOut" }}
           />
         </div>
+
+        {/* Role subtitle from extracted data */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.8 }}
+          className="font-sans text-[0.7rem] tracking-[0.35em] uppercase opacity-60 mb-8"
+        >
+          {data.role}
+        </motion.p>
 
         <p className="font-japanese text-xl md:text-3xl tracking-[0.8em] opacity-30 mb-12 leading-relaxed max-w-2xl mx-auto">
           {data.jpQuote}

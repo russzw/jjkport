@@ -16,9 +16,10 @@ export default function About({ data, theme }: AboutProps) {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-6xl mb-8 leading-none">
+          <h2 className="text-4xl md:text-6xl mb-8 leading-none">
             Architect of the <em className="text-accent not-italic">Impossible</em>
           </h2>
+
           <p className="text-lg leading-relaxed opacity-80 mb-6">
             {data.bio}
           </p>
@@ -44,9 +45,10 @@ export default function About({ data, theme }: AboutProps) {
           </div>
         </motion.div>
         
-        <div className="relative aspect-[3/4] max-w-sm mx-auto w-full">
-          <div className="absolute inset-0 border border-accent/20 translate-x-4 translate-y-4 jjk-button" />
-          <div className="absolute inset-0 border border-secondary/20 -translate-x-4 -translate-y-4 jjk-button" />
+        <div className="relative aspect-[3/4] max-w-[280px] md:max-w-sm mx-auto w-full">
+          <div className="absolute inset-0 border border-accent/20 translate-x-2 md:translate-x-4 translate-y-2 md:translate-y-4 jjk-button" />
+          <div className="absolute inset-0 border border-secondary/20 -translate-x-2 md:-translate-x-4 -translate-y-2 md:-translate-y-4 jjk-button" />
+
           <div className="absolute inset-4 glass-panel overflow-hidden jjk-button">
             <img 
               src="/images/profile.png"

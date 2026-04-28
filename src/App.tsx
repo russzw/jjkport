@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Code2, User, Briefcase, Send, Quote, BookOpen, Settings, Save, X, Plus, Trash2 } from 'lucide-react';
+import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Code2, User, Briefcase, Send, Quote, BookOpen, Settings, Save, X, Plus, Trash2, Menu } from 'lucide-react';
 import { cn } from './lib/utils';
 import { PortfolioData } from './types/portfolio';
 import { DEFAULT_DATA } from './data';
@@ -33,7 +33,9 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [data, setData] = useState<PortfolioData>(DEFAULT_DATA);
+
 
   useEffect(() => {
     setMounted(true);
@@ -176,7 +178,7 @@ export default function App() {
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl font-vinyl tracking-wider text-text flex items-center gap-1"
+          className="text-2xl font-display uppercase tracking-widest text-text flex items-center gap-1"
         >
           dev<span className="text-accent drop-shadow-[0_0_10px_var(--accent)]">🔥</span>russ
         </motion.div>
@@ -197,8 +199,67 @@ export default function App() {
           >
             {theme === 'gojo' ? <Moon size={18} className="text-text" /> : <Sun size={18} className="text-text" />}
           </button>
+
+          <button 
+            onClick={() => setShowMobileMenu(true)}
+            className="w-10 h-10 flex md:hidden items-center justify-center border border-border bg-bg/50 backdrop-blur-sm hover:text-accent transition-colors"
+          >
+            <Menu size={20} />
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {showMobileMenu && (
+          <motion.div
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[100] bg-bg/95 backdrop-blur-2xl flex flex-col p-8"
+          >
+            <div className="flex justify-between items-center mb-16">
+              <div className="text-2xl font-display uppercase tracking-widest text-text">
+                dev<span className="text-accent">🔥</span>russ
+              </div>
+              <button onClick={() => setShowMobileMenu(false)} className="text-text hover:text-accent">
+                <X size={32} />
+              </button>
+            </div>
+            
+            <nav className="flex flex-col gap-8">
+              {['About', 'Skills', 'Experience', 'Projects', 'Journal', 'Contact'].map((item, i) => (
+                <motion.a
+                  key={item}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  href={`#${item.toLowerCase()}`}
+                  onClick={() => setShowMobileMenu(false)}
+                  className="text-4xl font-display uppercase tracking-tighter hover:text-accent transition-colors"
+                >
+                  {item}
+                </motion.a>
+              ))}
+            </nav>
+
+            <div className="mt-auto pt-12 border-t border-border/50">
+              <p className="text-[0.6rem] uppercase tracking-[0.4em] opacity-40 mb-8">System Status: Active</p>
+              <div className="flex gap-6">
+                <button 
+                  onClick={toggleTheme}
+                  className="flex items-center gap-3 text-xs uppercase tracking-widest font-bold text-accent"
+                >
+                  {theme === 'gojo' ? <Moon size={16} /> : <Sun size={16} />}
+                  Switch Domain
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       {/* SECTIONS */}
       <Hero data={data.hero} theme={theme} />
@@ -213,7 +274,7 @@ export default function App() {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-2xl font-vinyl tracking-wider text-text flex items-center gap-1">
+          <div className="text-2xl font-display uppercase tracking-widest text-text flex items-center gap-1">
             dev<span className="text-accent drop-shadow-[0_0_10px_var(--accent)]">🔥</span>russ
           </div>
           <div className="text-[0.6rem] opacity-40 font-sans uppercase tracking-[0.2em] text-center">

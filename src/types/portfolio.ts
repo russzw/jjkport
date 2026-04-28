@@ -31,6 +31,7 @@ export interface Project {
   stack: string[];
   demoUrl?: string;
   repoUrl?: string;
+  imageUrl?: string;
 }
 
 export interface ExperienceEntry {

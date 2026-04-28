@@ -40,12 +40,15 @@
     --border-color: rgba(196, 30, 58, 0.25);
   }
 
-  body {
+  html, body {
     @apply transition-colors duration-700 ease-in-out antialiased;
     background-color: var(--bg);
     color: var(--text);
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
+
 
   h1, h2, h3 {
     @apply font-display uppercase tracking-tighter;
@@ -76,9 +79,10 @@
 }
 
 .domain-expansion-text {
-  font-size: clamp(3rem, 15vw, 12rem);
+  font-size: clamp(2.5rem, 12vw, 12rem);
   line-height: 0.8;
 }
+
 
 .glass-panel {
   background: rgba(255, 255, 255, 0.4);

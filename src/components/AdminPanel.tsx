@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Plus, Trash2, LayoutDashboard, User, Zap, Briefcase, Code, MessageSquare, BookOpen, Share2, Inbox, Mail, MailOpen } from 'lucide-react';
+import { X, Plus, Trash2, LayoutDashboard, User, Zap, Briefcase, Code, MessageSquare, BookOpen, Share2, Inbox, Mail, MailOpen, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
 import { PortfolioData, ContactMessage } from '../types/portfolio';
 import { subscribeToMessages, markMessageRead, deleteMessage } from '../lib/firestore';
+import { uploadImage } from '../lib/storage';
 
 interface AdminPanelProps {
   data: PortfolioData;
@@ -24,10 +25,64 @@ const TABS = [
   { id: 'contact', label: 'Channels', icon: Share2 },
 ] as const;
 
+function ImageUpload({ value, onUpload, path }: { value?: string, onUpload: (url: string) => void, path: string }) {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const url = await uploadImage(file, `${path}/${Date.now()}-${file.name}`);
+      onUpload(url);
+    } catch (error: any) {
+      console.error('Upload failed:', error);
+      const msg = error?.code || error?.message || 'Unknown error';
+      alert(`Upload failed: ${msg}. Check console for details. Ensure Firebase Storage is enabled and rules allow writes.`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-4">
+        {value ? (
+          <div className="relative w-20 h-20 border border-border overflow-hidden group">
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <label className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+              <Upload size={16} className="text-white" />
+              <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />
+            </label>
+          </div>
+        ) : (
+          <label className="w-20 h-20 border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-colors">
+            {uploading ? <Loader2 size={20} className="animate-spin text-accent" /> : <ImageIcon size={20} className="opacity-30" />}
+            <span className="text-[0.5rem] mt-1 opacity-50">{uploading ? 'UP...' : 'IMG'}</span>
+            <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />
+          </label>
+        )}
+        <div className="flex-1">
+          <label className="text-[0.6rem] uppercase opacity-50 tracking-widest block mb-1">Image URL</label>
+          <input 
+            value={value || ''} 
+            onChange={e => onUpload(e.target.value)}
+            placeholder="https://..." 
+            className="w-full bg-white/5 border border-border p-2 text-xs outline-none focus:border-accent"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPanel({ data: initialData, onSave, onClose }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState<TabType>('messages');
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [data, setData] = useState<PortfolioData>(initialData);
+  const [isSaving, setIsSaving] = useState(false);
+
 
   useEffect(() => {
     const unsub = subscribeToMessages(setMessages);
@@ -36,11 +91,15 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
 
   useEffect(() => {
     // Debounce the global save to prevent massive React re-renders and Firebase writes on every keystroke
+    setIsSaving(true);
     const timer = setTimeout(() => {
       onSave(data);
-    }, 500);
+      setIsSaving(false);
+    }, 1000); // Increased debounce to 1s for safety
     return () => clearTimeout(timer);
   }, [data, onSave]);
+
+
 
   const unreadCount = messages.filter(m => !m.read).length;
 
@@ -58,44 +117,67 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
             <div className="w-4 h-4 bg-accent animate-spin-slow rotate-45" />
             Scroll Editor
           </h1>
-          <button onClick={onClose} className="text-text hover:text-accent transition-colors md:hidden">
-            <X size={24} />
+          <div className="flex items-center gap-4">
+            {isSaving && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center gap-2 text-accent text-[0.6rem] font-bold uppercase tracking-widest"
+              >
+                <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+                Syncing
+              </motion.div>
+            )}
+            <button onClick={onClose} className="text-text hover:text-accent transition-colors md:hidden">
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+
+
+        <nav className="flex-1 overflow-x-auto md:overflow-y-auto flex md:flex-col gap-2 pb-4 md:pb-0 scrollbar-hide -mx-2 px-2">
+          {TABS.map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as TabType)}
+                className={`flex items-center gap-3 px-4 py-3 text-left transition-all whitespace-nowrap md:whitespace-normal group relative ${
+                  isActive 
+                    ? 'bg-accent/10 md:border-l-2 border-accent text-accent' 
+                    : 'text-text/60 hover:bg-white/5 hover:text-text'
+                }`}
+              >
+                <tab.icon size={16} />
+                <span className="text-[0.6rem] md:text-xs font-sans tracking-widest uppercase font-bold">{tab.label}</span>
+                {tab.id === 'messages' && unreadCount > 0 && (
+                  <span className="ml-2 md:ml-auto bg-accent text-bg text-[0.6rem] font-bold px-2 py-0.5 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+                {/* Mobile Active Indicator */}
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-accent md:hidden" />
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        
+        <div className="pt-6 border-t border-border mt-auto">
+          <button onClick={onClose} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors border border-red-500/20 jjk-button">
+            <X size={16} />
+            <span className="text-[0.6rem] md:text-xs uppercase tracking-widest font-bold">Seal Domain</span>
           </button>
         </div>
 
-        <nav className="flex-1 overflow-x-auto md:overflow-y-auto flex md:flex-col gap-2 pb-4 md:pb-0 scrollbar-hide">
-          {TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as TabType)}
-              className={`flex items-center gap-3 px-4 py-3 text-left transition-all whitespace-nowrap md:whitespace-normal ${
-                activeTab === tab.id 
-                  ? 'bg-accent/10 border-l-2 border-accent text-accent' 
-                  : 'text-text/60 hover:bg-white/5 hover:text-text'
-              }`}
-            >
-              <tab.icon size={16} />
-              <span className="text-xs font-sans tracking-widest uppercase">{tab.label}</span>
-              {tab.id === 'messages' && unreadCount > 0 && (
-                <span className="ml-auto bg-accent text-bg text-[0.6rem] font-bold px-2 py-0.5 rounded-full">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-        
-        <div className="hidden md:block pt-6 border-t border-border mt-auto">
-          <button onClick={onClose} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors border border-red-500/20 jjk-button">
-            <X size={16} />
-            <span className="text-xs uppercase tracking-widest font-bold">Seal Domain</span>
-          </button>
-        </div>
       </div>
 
       {/* CONTENT AREA */}
-      <div className="flex-1 overflow-y-auto p-6 md:p-12 scrollbar-hide">
-        <div className="max-w-4xl mx-auto space-y-12 pb-24">
+      <div className="flex-1 overflow-y-auto p-4 md:p-12 scrollbar-hide">
+        <div className="max-w-4xl mx-auto space-y-8 md:space-y-12 pb-24">
+
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -153,7 +235,7 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-[0.6rem] uppercase tracking-widest opacity-50 mb-2">First Name</label>
-                      <input value={data.hero.name} onChange={e => onSave({...data, hero: {...data.hero, name: e.target.value}})} className="w-full bg-white/5 border border-border p-4 outline-none focus:border-accent" />
+                      <input value={data.hero.name} onChange={e => setData({...data, hero: {...data.hero, name: e.target.value}})} className="w-full bg-white/5 border border-border p-4 outline-none focus:border-accent" />
                     </div>
                     <div>
                       <label className="block text-[0.6rem] uppercase tracking-widest opacity-50 mb-2">Last Name</label>
@@ -215,12 +297,13 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
               {/* === SKILLS TAB === */}
               {activeTab === 'skills' && (
                 <section>
-                  <div className="flex justify-between items-center mb-6">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                     <h3 className="section-label text-accent font-bold mb-0">// CURSED TECHNIQUES</h3>
-                    <button onClick={() => setData({...data, skills: [...data.skills, {title: 'New Category', desc: 'Description', skills: []}]})} className="flex items-center gap-2 text-xs bg-accent/20 text-accent px-4 py-2 hover:bg-accent hover:text-bg transition-all">
+                    <button onClick={() => setData({...data, skills: [...data.skills, {title: 'New Category', desc: 'Description', skills: []}]})} className="flex items-center gap-2 text-xs bg-accent/20 text-accent px-4 py-2 hover:bg-accent hover:text-bg transition-all w-fit">
                       <Plus size={14} /> Add Category
                     </button>
                   </div>
+
                   <div className="space-y-8">
                     {data.skills.map((category, cIdx) => (
                       <div key={cIdx} className="glass-panel p-6 border-l-2 border-l-accent relative group">
@@ -259,12 +342,13 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
               {/* === EXPERIENCE TAB === */}
               {activeTab === 'experience' && (
                 <section>
-                  <div className="flex justify-between items-center mb-6">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                     <h3 className="section-label text-accent font-bold mb-0">// CHRONICLES</h3>
-                    <button onClick={() => setData({...data, experience: [{period: '2025 - Present', role: 'Role', company: 'Company', achievements: ['Did something'] }, ...data.experience]})} className="flex items-center gap-2 text-xs bg-accent/20 text-accent px-4 py-2 hover:bg-accent hover:text-bg transition-all">
+                    <button onClick={() => setData({...data, experience: [{period: '2025 - Present', role: 'Role', company: 'Company', achievements: ['Did something'] }, ...data.experience]})} className="flex items-center gap-2 text-xs bg-accent/20 text-accent px-4 py-2 hover:bg-accent hover:text-bg transition-all w-fit">
                       <Plus size={14} /> Add Role
                     </button>
                   </div>
+
                   <div className="space-y-6">
                     {data.experience.map((exp, eIdx) => (
                       <div key={eIdx} className="glass-panel p-6 relative group">
@@ -308,9 +392,9 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
               {/* === PROJECTS TAB === */}
               {activeTab === 'projects' && (
                 <section>
-                  <div className="flex justify-between items-center mb-6">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                     <h3 className="section-label text-accent font-bold mb-0">// MANIFESTATIONS</h3>
-                    <button onClick={() => setData({...data, projects: [{id: 'new', title: 'New Project', type: 'App Type', desc: 'Description', stack: ['React'] }, ...data.projects]})} className="flex items-center gap-2 text-xs bg-accent/20 text-accent px-4 py-2 hover:bg-accent hover:text-bg transition-all">
+                    <button onClick={() => setData({...data, projects: [{id: `p${Math.random().toString(36).substr(2, 5)}`, title: 'New Project', type: 'App Type', desc: 'Description', stack: ['React'] }, ...data.projects]})} className="flex items-center gap-2 text-xs bg-accent/20 text-accent px-4 py-2 hover:bg-accent hover:text-bg transition-all w-fit">
                       <Plus size={14} /> Add Project
                     </button>
                   </div>
@@ -321,10 +405,14 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-8">
                           <div>
-                            <label className="text-[0.6rem] uppercase opacity-50 tracking-widest block mb-1">Image ID (for /images/project-ID.png)</label>
-                            <input value={proj.id} onChange={e => {
-                              const updated = [...data.projects]; updated[pIdx].id = e.target.value; setData({...data, projects: updated});
-                            }} className="w-full bg-white/5 border border-border p-3 text-sm outline-none focus:border-accent" />
+                            <label className="text-[0.6rem] uppercase opacity-50 tracking-widest block mb-1">Project Image</label>
+                            <ImageUpload 
+                              value={proj.imageUrl} 
+                              path={`projects/${proj.id}`}
+                              onUpload={(url) => {
+                                const updated = [...data.projects]; updated[pIdx].imageUrl = url; setData({...data, projects: updated});
+                              }}
+                            />
                           </div>
                           <div>
                             <label className="text-[0.6rem] uppercase opacity-50 tracking-widest block mb-1">Type</label>

@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -12,4 +13,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+console.log('Firebase initialized with Project ID:', firebaseConfig.projectId);
+if (!firebaseConfig.storageBucket) {
+  console.error('CRITICAL: Firebase Storage Bucket is undefined. Image uploads will fail.');
+}
+
 export const db = getFirestore(app);
+export const storage = getStorage(app);
+

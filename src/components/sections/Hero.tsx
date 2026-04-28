@@ -8,7 +8,8 @@ interface HeroProps {
 
 export default function Hero({ data, theme }: HeroProps) {
   return (
-    <section className="relative h-screen flex flex-col justify-center items-center px-6 overflow-hidden">
+    <section className="relative min-h-[100dvh] flex flex-col justify-between items-center px-6 py-20 overflow-hidden">
+
       {/* Drifting Cursed Energy Particles (DOM-based) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[...Array(12)].map((_, i) => (
@@ -35,6 +36,9 @@ export default function Hero({ data, theme }: HeroProps) {
           />
         ))}
       </div>
+
+      <div /> {/* Top Spacer for justify-between */}
+
 
       <motion.div
         initial={{ opacity: 0, y: 100 }}
@@ -78,15 +82,16 @@ export default function Hero({ data, theme }: HeroProps) {
           {data.jpQuote}
         </p>
 
-        <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-          <a href="#projects" className="jjk-button group relative bg-accent text-bg px-12 py-5 font-sans text-[0.7rem] tracking-[0.3em] overflow-hidden transition-all hover:scale-105 active:scale-95">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center items-center w-full max-w-md mx-auto md:max-w-none">
+          <a href="#projects" className="jjk-button w-full md:w-auto group relative bg-accent text-bg px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] overflow-hidden transition-all hover:scale-105 active:scale-95 text-center">
             <span className="relative z-10">VIEW MY WORK</span>
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </a>
-          <a href="#contact" className="jjk-button group border border-current px-12 py-5 font-sans text-[0.7rem] tracking-[0.3em] transition-all hover:text-accent hover:border-accent hover:scale-105 active:scale-95">
+          <a href="#contact" className="jjk-button w-full md:w-auto group border border-current px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] transition-all hover:text-accent hover:border-accent hover:scale-105 active:scale-95 text-center">
             OPEN A CHANNEL
           </a>
         </div>
+
       </motion.div>
       
       <motion.div 
@@ -105,14 +110,15 @@ export default function Hero({ data, theme }: HeroProps) {
       <div className="absolute bottom-32 left-12 w-24 h-24 border-b border-l border-accent/20 hidden lg:block" />
       <div className="absolute bottom-32 right-12 w-24 h-24 border-b border-r border-accent/20 hidden lg:block" />
 
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-40">
+      <div className="flex flex-col items-center gap-4 opacity-40 mt-12">
         <span className="text-[0.6rem] tracking-[0.5em] uppercase font-bold">Initiate Descent</span>
         <motion.div 
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-[1px] h-16 bg-gradient-to-b from-accent to-transparent" 
+          className="w-[1px] h-12 md:h-16 bg-gradient-to-b from-accent to-transparent" 
         />
       </div>
     </section>
+
   );
 }

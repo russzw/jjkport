@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus, Trash2, LayoutDashboard, User, Zap, Briefcase, Code, MessageSquare, BookOpen, Share2, Inbox, Mail, MailOpen, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
 import { PortfolioData, ContactMessage } from '../types/portfolio';
@@ -50,7 +50,7 @@ function ImageUpload({ value, onUpload, path }: { value?: string, onUpload: (url
       <div className="flex items-center gap-4">
         {value ? (
           <div className="relative w-20 h-20 border border-border overflow-hidden group">
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <img src={value} alt="Preview" loading="lazy" decoding="async" className="w-full h-full object-cover" />
             <label className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
               <Upload size={16} className="text-white" />
               <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />

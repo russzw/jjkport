@@ -53,6 +53,8 @@ export default function About({ data, theme }: AboutProps) {
             <img 
               src="/images/profile.png"
               alt="Russell Mutamba"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
             />
           </div>

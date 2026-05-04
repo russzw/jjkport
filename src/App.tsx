@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Code2, User, Briefcase, Send, Quote, BookOpen, Settings, Save, X, Plus, Trash2, Menu } from 'lucide-react';
 import { cn } from './lib/utils';
@@ -7,11 +7,11 @@ import { DEFAULT_DATA } from './data';
 import { loadPortfolioData, savePortfolioData, subscribeToPortfolioData } from './lib/firestore';
 
 // Components
-import CursedBackground from './components/CursedBackground';
-import SukunaMark from './components/SukunaMark';
 import CursedCursor from './components/CursedCursor';
-import AdminPanel from './components/AdminPanel';
-import DomainAuthModal from './components/DomainAuthModal';
+const CursedBackground = lazy(() => import('./components/CursedBackground'));
+const SukunaMark = lazy(() => import('./components/SukunaMark'));
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+const DomainAuthModal = lazy(() => import('./components/DomainAuthModal'));
 
 // Sections
 import Hero from './components/sections/Hero';
@@ -136,8 +136,10 @@ export default function App() {
   return (
     <div className="relative min-h-screen font-sans selection:bg-accent selection:text-bg cursor-none">
       <CursedCursor theme={theme} />
-      <CursedBackground theme={theme} />
-      <SukunaMark theme={theme} />
+      <Suspense fallback={null}>
+        <CursedBackground theme={theme} />
+        <SukunaMark theme={theme} />
+      </Suspense>
       
       {/* Domain Expansion Flash */}
       <motion.div 
@@ -151,6 +153,7 @@ export default function App() {
         <button 
           onClick={() => setShowAdminPanel(true)}
           className="fixed bottom-8 right-8 z-[100] w-14 h-14 bg-accent text-bg rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform animate-pulse"
+          aria-label="Open admin panel"
         >
           <Settings size={24} />
         </button>
@@ -159,20 +162,24 @@ export default function App() {
       {/* Admin Panel Modal */}
       <AnimatePresence>
         {showAdminPanel && (
-          <AdminPanel 
-            data={data} 
-            onSave={saveData} 
-            onClose={() => setShowAdminPanel(false)} 
-          />
+          <Suspense fallback={null}>
+            <AdminPanel 
+              data={data} 
+              onSave={saveData} 
+              onClose={() => setShowAdminPanel(false)} 
+            />
+          </Suspense>
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {showAuthModal && (
-          <DomainAuthModal
-            onSuccess={handleAuthSuccess}
-            onClose={() => setShowAuthModal(false)}
-          />
+          <Suspense fallback={null}>
+            <DomainAuthModal
+              onSuccess={handleAuthSuccess}
+              onClose={() => setShowAuthModal(false)}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
 
@@ -202,6 +209,7 @@ export default function App() {
           <button 
             onClick={toggleTheme}
             className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-accent hover:text-bg transition-all duration-500 bg-bg/50 backdrop-blur-sm"
+            aria-label="Toggle theme"
           >
             {theme === 'gojo' ? <Moon size={18} className="text-text" /> : <Sun size={18} className="text-text" />}
           </button>
@@ -209,6 +217,7 @@ export default function App() {
           <button 
             onClick={() => setShowMobileMenu(true)}
             className="w-10 h-10 flex md:hidden items-center justify-center border border-border bg-bg/50 backdrop-blur-sm hover:text-accent transition-colors"
+            aria-label="Open mobile menu"
           >
             <Menu size={20} />
           </button>
@@ -229,7 +238,7 @@ export default function App() {
               <div className="text-2xl font-display uppercase tracking-widest text-text">
                 dev<span className="text-accent">🔥</span>russ
               </div>
-              <button onClick={() => setShowMobileMenu(false)} className="text-text hover:text-accent">
+              <button onClick={() => setShowMobileMenu(false)} className="text-text hover:text-accent" aria-label="Close mobile menu">
                 <X size={32} />
               </button>
             </div>
@@ -292,6 +301,7 @@ export default function App() {
               onClick={() => setShowAuthModal(true)}
               className="hover:text-accent transition-all duration-300 cursor-pointer opacity-20 hover:opacity-100 hover:scale-125"
               title="Domain Access"
+              aria-label="Domain Access"
             >
               闇
             </button>

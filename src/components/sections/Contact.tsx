@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Github, Linkedin, Send, Twitter, Instagram, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { ContactData } from '../../types/portfolio';

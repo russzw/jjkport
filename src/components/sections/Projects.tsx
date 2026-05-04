@@ -29,6 +29,8 @@ export default function Projects({ data }: ProjectsProps) {
               <img 
                 src={project.imageUrl || `/images/project-${project.id}.png`} 
                 alt={project.title}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
               />
             </div>

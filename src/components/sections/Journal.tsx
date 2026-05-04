@@ -10,6 +10,9 @@ interface JournalProps {
 
 export default function Journal({ data }: JournalProps) {
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+  const [showAll, setShowAll] = useState(false);
+
+  const displayedData = showAll ? data : data.slice(0, 3);
 
   return (
     <section id="journal" className="py-32 px-6 max-w-7xl mx-auto relative">
@@ -29,13 +32,19 @@ export default function Journal({ data }: JournalProps) {
           <h2 className="text-4xl md:text-6xl">Journal of <br/>Techniques</h2>
 
         </div>
-        <a href="#" className="text-accent text-xs tracking-widest uppercase border-b border-accent pb-1 hover:opacity-70 transition-opacity">
-          All Entries →
-        </a>
+        {data.length > 3 && (
+          <button 
+            onClick={() => setShowAll(!showAll)} 
+            className="text-accent text-xs tracking-widest uppercase border-b border-accent pb-1 hover:opacity-70 transition-opacity"
+            aria-label={showAll ? "Show fewer entries" : "Show all entries"}
+          >
+            {showAll ? 'Show Less ←' : 'All Entries →'}
+          </button>
+        )}
       </div>
       
       <div className="grid md:grid-cols-3 gap-1px bg-border">
-        {data.map((post, i) => (
+        {displayedData.map((post, i) => (
           <motion.div
             key={post.title}
             initial={{ opacity: 0 }}
@@ -50,6 +59,7 @@ export default function Journal({ data }: JournalProps) {
             <button 
               onClick={() => setSelectedEntry(post)}
               className="text-accent text-xs tracking-widest uppercase flex items-center gap-2 mt-auto mx-auto"
+              aria-label={`Open scroll: ${post.title}`}
             >
               <BookOpen size={14} /> Open Scroll
             </button>

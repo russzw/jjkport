@@ -253,6 +253,10 @@ export default function AdminPanel({ data: initialData, onSave, onClose }: Admin
                       <label className="block text-[0.6rem] uppercase tracking-widest opacity-50 mb-2">Japanese Quote</label>
                       <input value={data.hero.jpQuote} onChange={e => setData({...data, hero: {...data.hero, jpQuote: e.target.value}})} className="w-full bg-white/5 border border-border p-4 outline-none focus:border-accent font-japanese" />
                     </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-[0.6rem] uppercase tracking-widest opacity-50 mb-2">Resume / CV URL</label>
+                      <input value={data.hero.resumeUrl || ''} onChange={e => setData({...data, hero: {...data.hero, resumeUrl: e.target.value}})} className="w-full bg-white/5 border border-border p-4 outline-none focus:border-accent" placeholder="/resume.pdf" />
+                    </div>
                   </div>
                 </section>
               )}

@@ -168,9 +168,9 @@ export default function Contact({ data }: ContactProps) {
             </div>
             <button 
               disabled={status !== 'idle'}
-              className="w-full py-6 bg-accent text-bg font-display text-xl uppercase tracking-widest hover:bg-secondary transition-colors flex items-center justify-center gap-4 jjk-button group disabled:opacity-50"
+              className="w-full py-4 md:py-6 bg-accent text-bg font-display text-base md:text-xl uppercase tracking-widest hover:bg-secondary transition-colors flex items-center justify-center gap-2 md:gap-4 jjk-button group disabled:opacity-50"
             >
-              <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> 
+              <Send size={18} className="md:w-5 md:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> 
               <span>Transmit Message</span>
             </button>
           </form>

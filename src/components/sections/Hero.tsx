@@ -90,6 +90,11 @@ export default function Hero({ data, theme }: HeroProps) {
           <a href="#contact" className="jjk-button w-full md:w-auto group border border-current px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] transition-all hover:text-accent hover:border-accent hover:scale-105 active:scale-95 text-center">
             OPEN A CHANNEL
           </a>
+          {data.resumeUrl && (
+            <a href={data.resumeUrl} target="_blank" rel="noopener noreferrer" className="jjk-button w-full md:w-auto group border border-accent text-accent px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] transition-all hover:bg-accent hover:text-bg hover:scale-105 active:scale-95 text-center">
+              DOWNLOAD CV
+            </a>
+          )}
         </div>
 
       </motion.div>

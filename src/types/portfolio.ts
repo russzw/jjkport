@@ -4,6 +4,7 @@ export interface HeroData {
   title: string;
   role: string;
   jpQuote: string;
+  resumeUrl?: string;
 }
 
 export interface AboutStat {

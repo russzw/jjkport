@@ -50,6 +50,9 @@ export default function App() {
     // Load initial data from Firestore
     loadPortfolioData().then(saved => {
       if (saved) {
+        if (saved.hero && !saved.hero.resumeUrl) {
+          saved.hero.resumeUrl = DEFAULT_DATA.hero.resumeUrl;
+        }
         setData(saved);
       } else {
         // If no data in Firestore yet, initialize it
@@ -59,6 +62,9 @@ export default function App() {
 
     // Subscribe to real-time updates
     const unsubscribe = subscribeToPortfolioData((updatedData) => {
+      if (updatedData.hero && !updatedData.hero.resumeUrl) {
+        updatedData.hero.resumeUrl = DEFAULT_DATA.hero.resumeUrl;
+      }
       setData(updatedData);
     });
 

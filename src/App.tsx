@@ -358,7 +358,7 @@ export default function App() {
             dev<span className="text-accent drop-shadow-[0_0_10px_var(--accent)]">🔥</span>russ
           </div>
           <div className="text-[0.6rem] opacity-40 font-sans uppercase tracking-[0.2em] text-center">
-            © 2025 Russell Mutamba. All techniques reserved.
+            © {new Date().getFullYear()} Russell Mutamba. All techniques reserved.
           </div>
           <div className="font-japanese text-sm tracking-[0.3em] opacity-40 flex items-center gap-4">
             <span>呪術師 · 開発者</span>

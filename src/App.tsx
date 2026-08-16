@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Code2, User, Briefcase, Send, Quote, BookOpen, Settings, Save, X, Plus, Trash2, Menu } from 'lucide-react';
+import { Moon, Sun, Github, Linkedin, Mail, ExternalLink, Code2, User, Briefcase, Send, Quote, BookOpen, Settings, Save, X, Plus, Trash2, Menu, Leaf } from 'lucide-react';
 import { cn } from './lib/utils';
 import { PortfolioData } from './types/portfolio';
 import { DEFAULT_DATA } from './data';
 import { loadPortfolioData, savePortfolioData, subscribeToPortfolioData } from './lib/firestore';
 
 // Components
-import CursedCursor from './components/CursedCursor';
+const CursedCursor = lazy(() => import('./components/CursedCursor'));
+import ZenPortfolio from './components/ZenPortfolio';
+import ModeWelcomeModal from './components/ModeWelcomeModal';
+import ZenAuthModal from './components/ZenAuthModal';
 const CursedBackground = lazy(() => import('./components/CursedBackground'));
 const SukunaMark = lazy(() => import('./components/SukunaMark'));
 const AdminPanel = lazy(() => import('./components/AdminPanel'));
@@ -19,13 +22,17 @@ import About from './components/sections/About';
 import Skills from './components/sections/Skills';
 import Experience from './components/sections/Experience';
 import Projects from './components/sections/Projects';
-import Testimonials from './components/sections/Testimonials';
-import Journal from './components/sections/Journal';
-import Contact from './components/sections/Contact';
+const Testimonials = lazy(() => import('./components/sections/Testimonials'));
+const Journal = lazy(() => import('./components/sections/Journal'));
+const Contact = lazy(() => import('./components/sections/Contact'));
 
 export default function App() {
   const [theme, setTheme] = useState<'gojo' | 'sukuna'>('gojo');
+  const [mode, setMode] = useState<'zen' | 'immersive' | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isCoarse] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+  );
   const [flash, setFlash] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
@@ -108,6 +115,22 @@ export default function App() {
     sessionStorage.setItem('jjk_admin_active', 'true');
   };
 
+  const selectMode = (next: 'zen' | 'immersive') => {
+    setMode(next);
+    localStorage.setItem('jjk_mode', next);
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem('jjk_mode');
+    if (saved === 'zen' || saved === 'immersive') {
+      setMode(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-mode', mode ?? 'immersive');
+  }, [mode]);
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'gojo' ? 'sukuna' : 'gojo');
   };
@@ -133,26 +156,24 @@ export default function App() {
 
   if (!mounted) return null;
 
+  const isZen = mode === 'zen';
+
   return (
-    <div className="relative min-h-screen font-sans selection:bg-accent selection:text-bg cursor-none">
-      <CursedCursor theme={theme} />
-      <Suspense fallback={null}>
-        <CursedBackground theme={theme} />
-        <SukunaMark theme={theme} />
-      </Suspense>
-      
-      {/* Domain Expansion Flash */}
-      <motion.div 
-        className="domain-flash"
-        animate={{ opacity: flash ? 0.1 : 0 }}
-        transition={{ duration: 0.2 }}
-      />
+    <>
+      {mode === null && (
+        <ModeWelcomeModal onSelect={selectMode} />
+      )}
 
       {/* Admin Toggle (Visible only if unlocked) */}
       {isAdmin && (
         <button 
           onClick={() => setShowAdminPanel(true)}
-          className="fixed bottom-8 right-8 z-[100] w-14 h-14 bg-accent text-bg rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform animate-pulse"
+          className={cn(
+            "fixed bottom-8 right-8 z-[100] rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform",
+            isZen
+              ? "w-12 h-12 bg-zen-text text-zen-bg hover:opacity-80"
+              : "w-14 h-14 bg-accent text-bg animate-pulse"
+          )}
           aria-label="Open admin panel"
         >
           <Settings size={24} />
@@ -175,13 +196,39 @@ export default function App() {
       <AnimatePresence>
         {showAuthModal && (
           <Suspense fallback={null}>
-            <DomainAuthModal
-              onSuccess={handleAuthSuccess}
-              onClose={() => setShowAuthModal(false)}
-            />
+            {isZen ? (
+              <ZenAuthModal
+                onSuccess={handleAuthSuccess}
+                onClose={() => setShowAuthModal(false)}
+              />
+            ) : (
+              <DomainAuthModal
+                onSuccess={handleAuthSuccess}
+                onClose={() => setShowAuthModal(false)}
+              />
+            )}
           </Suspense>
         )}
       </AnimatePresence>
+
+      {isZen ? (
+        <ZenPortfolio data={data} onSwitchMode={() => selectMode('immersive')} />
+      ) : (
+    <div className="relative min-h-screen font-sans selection:bg-accent selection:text-bg cursor-none">
+      <Suspense fallback={null}>
+        {!isCoarse && <CursedCursor theme={theme} />}
+      </Suspense>
+      <Suspense fallback={null}>
+        <CursedBackground theme={theme} />
+        <SukunaMark theme={theme} />
+      </Suspense>
+      
+      {/* Domain Expansion Flash */}
+      <motion.div 
+        className="domain-flash"
+        animate={{ opacity: flash ? 0.1 : 0 }}
+        transition={{ duration: 0.2 }}
+      />
 
       {/* Navigation */}
       <nav className={cn(
@@ -212,6 +259,15 @@ export default function App() {
             aria-label="Toggle theme"
           >
             {theme === 'gojo' ? <Moon size={18} className="text-text" /> : <Sun size={18} className="text-text" />}
+          </button>
+
+          <button 
+            onClick={() => selectMode('zen')}
+            className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-accent hover:text-bg transition-all duration-500 bg-bg/50 backdrop-blur-sm"
+            aria-label="Switch to minimal mode"
+            title="Switch to minimal mode"
+          >
+            <Leaf size={18} className="text-text" />
           </button>
 
           <button 
@@ -269,6 +325,13 @@ export default function App() {
                   {theme === 'gojo' ? <Moon size={16} /> : <Sun size={16} />}
                   Switch Domain
                 </button>
+                <button 
+                  onClick={() => { selectMode('zen'); setShowMobileMenu(false); }}
+                  className="flex items-center gap-3 text-xs uppercase tracking-widest font-bold text-text"
+                >
+                  <Leaf size={16} />
+                  Minimal Mode
+                </button>
               </div>
             </div>
           </motion.div>
@@ -282,9 +345,11 @@ export default function App() {
       <Skills data={data.skills} />
       <Experience data={data.experience} />
       <Projects data={data.projects} />
-      <Testimonials data={data.testimonials} />
-      <Journal data={data.journal} />
-      <Contact data={data.contact} />
+      <Suspense fallback={null}>
+        <Testimonials data={data.testimonials} />
+        <Journal data={data.journal} />
+        <Contact data={data.contact} />
+      </Suspense>
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border">
@@ -308,6 +373,8 @@ export default function App() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+      )}
+    </>
   );
 }

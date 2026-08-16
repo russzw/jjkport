@@ -4,9 +4,18 @@
 @theme {
   --font-sans: "Space Mono", monospace;
   --font-display: "Cinzel", serif;
+  --font-zen: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-heading: "Bebas Neue", sans-serif;
   --font-japanese: "Noto Serif JP", serif;
   --font-vinyl: "Rubik Vinyl", system-ui;
+
+  --color-zen-bg: var(--zen-bg);
+  --color-zen-card: var(--zen-card);
+  --color-zen-text: var(--zen-text);
+  --color-zen-ink: var(--zen-ink);
+  --color-zen-accent: var(--zen-accent);
+  --color-zen-active: var(--zen-active);
+  --color-zen-border: var(--zen-border);
 
   --color-accent: var(--accent);
   --color-bg: var(--bg);
@@ -47,6 +56,48 @@
     overflow-x: hidden;
     width: 100%;
     position: relative;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
+
+  [data-mode='zen'] {
+    --tc: #f5e6b3;
+    --zen-bg: oklch(96% 0.08 97);
+    --zen-card: oklch(94% 0.1 93);
+    --zen-text: #000;
+    --zen-ink: oklch(40% 0.11 59);
+    --zen-accent: oklch(53% 0.24 258);
+    --zen-active: oklch(53% 0.27 325);
+    --zen-border: oklch(87% 0.08 97);
+  }
+
+  [data-mode='zen'][data-zen-theme='dark'] {
+    --tc: #000;
+    --zen-bg: #000;
+    --zen-card: #222;
+    --zen-text: #fff;
+    --zen-ink: oklch(92% 0.15 95);
+    --zen-accent: oklch(87% 0.24 166);
+    --zen-active: oklch(76% 0.25 345);
+    --zen-border: oklch(30% 0.03 90);
+  }
+
+  [data-mode='zen'], [data-mode='zen'] body {
+    background-color: var(--zen-bg);
+    color: var(--zen-text);
+  }
+
+  [data-mode='zen'] body ::selection {
+    color: #fff;
+    background: #36c;
+  }
+
+  [data-mode='zen'][data-zen-theme='dark'] body ::selection {
+    color: #000;
+    background: #fc0;
   }
 
 
@@ -106,4 +157,25 @@
 .section-label:hover::after {
   @apply opacity-100 scale-x-[1.02] origin-left;
   box-shadow: 0 0 15px var(--accent);
+}
+
+/* Below-the-fold sections: skip offscreen rendering */
+#projects,
+#journal,
+#contact {
+  content-visibility: auto;
+  contain-intrinsic-size: 640px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

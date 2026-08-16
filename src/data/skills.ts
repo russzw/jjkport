@@ -1,10 +1,10 @@
 import { SkillCategory } from '../types/portfolio';
 
 export const skillsData: SkillCategory[] = [
-  { title: 'Frontend Sorcery', desc: 'Crafting interfaces that bend reality. Pixel-perfect, performant, and alive with motion.', skills: ['React', 'Next.js', 'Three.js', 'TypeScript', 'Tailwind'] },
-  { title: 'Backend Binding', desc: 'Building the invisible fortress. Scalable APIs, real-time systems, and iron-clad logic.', skills: ['Node.js', 'Python', 'FastAPI', 'Firebase'] },
-  { title: 'Cloud Domain', desc: 'Infinite void infrastructure. Deploying, scaling, and fortifying systems at cloud scale.', skills: ['AWS', 'OCI', 'Docker', 'Kubernetes'] },
-  { title: 'DevOps Ritual', desc: 'Automating the cursed workflow. From commit to production, nothing escapes the pipeline.', skills: ['Git', 'Bash', 'GitHub Actions', 'Nginx'] },
-  { title: 'Data Inscription', desc: 'Structuring knowledge like cursed seals — every schema a work of precision engineering.', skills: ['PostgreSQL', 'MongoDB', 'Prisma'] },
-  { title: 'Mobile Manifestation', desc: 'Summoning native-grade experiences across every device. iOS and Android under one seal.', skills: ['React Native', 'Expo', 'Flutter', 'PWA'] },
+  { title: 'Frontend', desc: 'Crafting responsive, accessible interfaces with modern frameworks and a focus on performance.', skills: ['React', 'Next.js', 'Three.js', 'TypeScript', 'Tailwind'] },
+  { title: 'Backend', desc: 'Designing scalable APIs, real-time systems, and robust business logic.', skills: ['Node.js', 'Python', 'FastAPI', 'Firebase'] },
+  { title: 'Cloud & DevOps', desc: 'Deploying, scaling, and automating infrastructure with modern cloud platforms.', skills: ['AWS', 'OCI', 'Docker', 'Kubernetes'] },
+  { title: 'Tooling & Automation', desc: 'Streamlining workflows from commit to production with reliable pipelines.', skills: ['Git', 'Bash', 'GitHub Actions', 'Nginx'] },
+  { title: 'Data & Databases', desc: 'Structuring and querying data across relational and document stores.', skills: ['PostgreSQL', 'MongoDB', 'Prisma'] },
+  { title: 'Mobile', desc: 'Building native-grade cross-platform applications for iOS and Android.', skills: ['React Native', 'Expo', 'Flutter', 'PWA'] },
 ];

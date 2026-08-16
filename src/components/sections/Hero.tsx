@@ -12,24 +12,24 @@ export default function Hero({ data, theme }: HeroProps) {
 
       {/* Drifting Cursed Energy Particles (DOM-based) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(12)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full blur-xl opacity-20"
+            className="absolute rounded-full blur-lg opacity-15 will-change-transform"
             style={{
-              width: Math.random() * 200 + 100,
-              height: Math.random() * 200 + 100,
+              width: Math.random() * 160 + 80,
+              height: Math.random() * 160 + 80,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               backgroundColor: theme === 'sukuna' ? '#c41e3a' : '#00b4d8',
             }}
             animate={{
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-              scale: [1, 1.2, 1],
+              x: [0, Math.random() * 80 - 40],
+              y: [0, Math.random() * 80 - 40],
+              scale: [1, 1.15, 1],
             }}
             transition={{
-              duration: Math.random() * 10 + 10,
+              duration: Math.random() * 12 + 14,
               repeat: Infinity,
               ease: "easeInOut",
             }}
@@ -83,15 +83,15 @@ export default function Hero({ data, theme }: HeroProps) {
         </p>
 
         <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center items-center w-full max-w-md mx-auto md:max-w-none">
-          <a href="#projects" className="jjk-button w-full md:w-auto group relative bg-accent text-bg px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] overflow-hidden transition-all hover:scale-105 active:scale-95 text-center">
+          <a href="#projects" className="jjk-button w-full md:w-auto group relative bg-accent text-bg px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] overflow-hidden transition-[transform] hover:scale-105 active:scale-95 text-center">
             <span className="relative z-10">VIEW MY WORK</span>
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </a>
-          <a href="#contact" className="jjk-button w-full md:w-auto group border border-current px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] transition-all hover:text-accent hover:border-accent hover:scale-105 active:scale-95 text-center">
+          <a href="#contact" className="jjk-button w-full md:w-auto group border border-current px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] transition-[transform,border-color,color] hover:text-accent hover:border-accent hover:scale-105 active:scale-95 text-center">
             OPEN A CHANNEL
           </a>
           {data.resumeUrl && (
-            <a href={data.resumeUrl} target="_blank" rel="noopener noreferrer" className="jjk-button w-full md:w-auto group border border-accent text-accent px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] transition-all hover:bg-accent hover:text-bg hover:scale-105 active:scale-95 text-center">
+            <a href={data.resumeUrl} target="_blank" rel="noopener noreferrer" className="jjk-button w-full md:w-auto group border border-accent text-accent px-8 md:px-12 py-4 md:py-5 font-sans text-[0.6rem] md:text-[0.7rem] tracking-[0.3em] transition-[transform,background-color,color,border-color] hover:bg-accent hover:text-bg hover:scale-105 active:scale-95 text-center">
               DOWNLOAD CV
             </a>
           )}
